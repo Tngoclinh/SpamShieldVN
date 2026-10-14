@@ -14,29 +14,32 @@
 
 > Giới hạn Android: dịch vụ sàng lọc nhận được **số điện thoại**, không nhận tên thương hiệu đang được ứng dụng Điện thoại hiển thị. Vì vậy tên thương hiệu trong ứng dụng dùng để nhóm nhiều mẫu số. Muốn chỉ nhập tên rồi tự tìm tất cả số, sản phẩm thực tế cần thêm một cơ sở dữ liệu số-thương-hiệu từ máy chủ.
 
-## Môi trường đã cấu hình trên máy này
+## Yêu cầu môi trường
 
-- Project: `D:\extraproject\SpamShieldVN`
-- Android SDK: `D:\extraproject\.android-sdk`
-- Gradle cache khi dùng script: `D:\extraproject\.gradle-home`
-- Dữ liệu ADB: `D:\extraproject\.android-user`
-- JDK: `C:\Program Files\Java\jdk-21` (JDK đã có sẵn; script chỉ đọc, không ghi dữ liệu build vào ổ C)
-- Android: min SDK 29, target/compile SDK 35
+- Android Studio hoặc Android SDK có Android Platform 35 và Build Tools 35.0.0.
+- JDK 17 trở lên.
+- Thiết bị Android 10 (API 29) trở lên.
+
+Sau khi clone, mở thư mục project bằng Android Studio. Android Studio sẽ tự tạo `local.properties` trỏ tới SDK trên máy. File này mang đường dẫn riêng của từng máy nên không được đưa lên Git.
 
 ## Build APK
 
-Mở PowerShell:
+Mở Terminal hoặc PowerShell tại thư mục project:
 
 ```powershell
-cd D:\extraproject\SpamShieldVN
-.\build-on-d.ps1
+.\gradlew.bat testDebugUnitTest assembleDebug
 ```
 
-APK debug nằm tại:
+Trên macOS/Linux:
+
+```bash
+./gradlew testDebugUnitTest assembleDebug
+```
+
+APK debug được tạo tại:
 
 ```text
-D:\extraproject\SpamShieldVN\app\build\outputs\apk\debug\app-debug.apk
-D:\extraproject\SpamShieldVN\dist\SpamShieldVN-v1.0.0-debug.apk
+app/build/outputs/apk/debug/app-debug.apk
 ```
 
 ## Bật USB debugging trên điện thoại
@@ -51,9 +54,7 @@ D:\extraproject\SpamShieldVN\dist\SpamShieldVN-v1.0.0-debug.apk
 Kiểm tra kết nối:
 
 ```powershell
-$env:ANDROID_USER_HOME="D:\extraproject\.android-user"
-$env:ADB_VENDOR_KEYS="D:\extraproject\.android-user\adbkey"
-D:\extraproject\.android-sdk\platform-tools\adb.exe devices -l
+adb devices -l
 ```
 
 - Có chữ `device`: đã sẵn sàng.
@@ -62,11 +63,12 @@ D:\extraproject\.android-sdk\platform-tools\adb.exe devices -l
 
 ## Cài và chạy demo trên điện thoại
 
-Sau khi điện thoại hiện là `device`:
+Sau khi điện thoại hiện là `device`, build và cài APK:
 
 ```powershell
-cd D:\extraproject\SpamShieldVN
-.\install-on-phone.ps1
+.\gradlew.bat assembleDebug
+adb install -r .\app\build\outputs\apk\debug\app-debug.apk
+adb shell am start -n "vn.spamshield/.MainActivity"
 ```
 
 Trong lần mở đầu:
@@ -80,15 +82,18 @@ Android chỉ chuyển các số chưa lưu trong Danh bạ cho dịch vụ sàn
 
 ## Đưa bài lên GitHub và Google Drive
 
-Repository chưa thể tự được tải lên tài khoản cá nhân nếu chưa đăng nhập. Sau khi tạo một repository trống trên GitHub:
+Tạo repository trống tên `SpamShieldVN` trong tài khoản GitHub `Tngoclinh`. Không chọn tạo sẵn README, `.gitignore` hoặc license vì project đã có các file này. Sau đó chạy:
 
 ```powershell
 cd D:\extraproject\SpamShieldVN
-git init
-git add .
-git commit -m "Initial SpamShieldVN Android app"
-git branch -M main
-git remote add origin https://github.com/TEN_CUA_BAN/SpamShieldVN.git
+git remote add origin https://github.com/Tngoclinh/SpamShieldVN.git
+git push -u origin main
+```
+
+Nếu remote `origin` đã tồn tại, thay lệnh `remote add` bằng:
+
+```powershell
+git remote set-url origin https://github.com/Tngoclinh/SpamShieldVN.git
 git push -u origin main
 ```
 

@@ -9,5 +9,7 @@ captures/
 .cxx/
 app/build/
 dist/*.apk
+/build-on-d.ps1
+/install-on-phone.ps1
 *.jks
 *.keystore
